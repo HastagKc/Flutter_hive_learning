@@ -17,6 +17,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(201, 99, 26, 148),
       appBar: (AppBar()),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -25,8 +26,11 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextField(
+                // changing the colore of the text in textfield
+
+                style: const TextStyle(color: Colors.white),
                 controller: taskController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   label: Text("Enter Task"),
                   hintText: "Task",
                   border: OutlineInputBorder(),
@@ -38,21 +42,43 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
               Container(
                 height: 50.0,
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (taskController.text != '') {
-                      TodoModel newTodo = TodoModel(
-                          task: taskController.text, isComplete: false);
-                      todoBox.add(newTodo);
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text(
-                    "Add Task",
-                    style: TextStyle(
-                      fontSize: 20.0,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(
+                      width: 10.0,
+                    ),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (taskController.text != '') {
+                            TodoModel newTodo = TodoModel(
+                                task: taskController.text, isComplete: false);
+                            todoBox.add(newTodo);
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text(
+                          "Add Task",
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

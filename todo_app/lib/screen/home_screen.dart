@@ -15,76 +15,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueAccent,
+      backgroundColor: const Color.fromARGB(201, 99, 26, 148),
       appBar: AppBar(
         title: const Text('TodoApp'),
       ),
-      body: ValueListenableBuilder(
-        valueListenable: todoBox.listenable(),
-        builder: (context, Box box, child) {
-          if (box.isEmpty) {
-            return const Center(
-              child: Text("No todo task is available"),
-            );
-          } else {
-            return Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  ListView.builder(
-                    reverse: true,
-                    shrinkWrap: true,
-                    itemCount: box.length,
-                    itemBuilder: ((context, index) {
-                      TodoModel todo = box.getAt(index);
-                      return Card(
-                        color: (todo.isComplete)! ? Colors.green : Colors.red,
-                        elevation: 5.0,
-                        child: ListTile(
-                          title: Text(
-                            todo.task.toString(),
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.black,
-                              decoration: (todo.isComplete)!
-                                  ? TextDecoration.lineThrough
-                                  : TextDecoration.none,
-                            ),
-                          ),
-                          leading: Checkbox(
-                            value: todo.isComplete,
-                            onChanged: (value) {
-                              TodoModel newTodo = TodoModel(
-                                  task: todo.task, isComplete: value!);
-                              box.putAt(index, newTodo);
-                            },
-                          ),
-                          trailing: IconButton(
-                            onPressed: () {
-                              box.deleteAt(index);
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      "Todo Task is deleted sucessfully !"),
-                                ),
-                              );
-                            },
-                            icon: const Icon(
-                              Icons.delete,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                ],
-              ),
-            );
-          }
-        },
-      ),
+      body: ValueListenableBuilderWidgets(),
+      // floating actions button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
@@ -94,6 +30,75 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  ValueListenableBuilder<Box<dynamic>> ValueListenableBuilderWidgets() {
+    return ValueListenableBuilder(
+      valueListenable: todoBox.listenable(),
+      builder: (context, Box box, child) {
+        if (box.isEmpty) {
+          return const Center(
+            child: Text("No todo task is available"),
+          );
+        } else {
+          return Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                ListView.builder(
+                  reverse: true,
+                  shrinkWrap: true,
+                  itemCount: box.length,
+                  itemBuilder: ((context, index) {
+                    TodoModel todo = box.getAt(index);
+                    return Card(
+                      color: (todo.isComplete)! ? Colors.green : Colors.red,
+                      elevation: 5.0,
+                      child: ListTile(
+                        title: Text(
+                          todo.task.toString(),
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.black,
+                            decoration: (todo.isComplete)!
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                          ),
+                        ),
+                        leading: Checkbox(
+                          value: todo.isComplete,
+                          onChanged: (value) {
+                            TodoModel newTodo =
+                                TodoModel(task: todo.task, isComplete: value!);
+                            box.putAt(index, newTodo);
+                          },
+                        ),
+                        trailing: IconButton(
+                          onPressed: () {
+                            box.deleteAt(index);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text("Todo Task is deleted sucessfully !"),
+                              ),
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
 }
