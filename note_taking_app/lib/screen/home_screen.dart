@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             TextButton(
               onPressed: () {
-                if (titleController.text != '' || descController.text != "") {
+                if (titleController.text != '' || descController.text != '') {
                   final data = NotesModel(
                       title: titleController.text, Desc: descController.text);
                   // calling boxes class and creating box as an referenital variable
@@ -226,7 +226,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 notesModel.title = titleController.text.toString();
                 notesModel.Desc = descController.text.toString();
                 await notesModel.save();
-
+                titleController.clear();
+                descController.clear();
                 Navigator.pop(context);
               },
               child: const Text("Update notes"),

@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.purple,
       ),
       title: "Notes app",
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }
