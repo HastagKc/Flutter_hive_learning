@@ -17,7 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Notes"),
+        centerTitle: true,
+        title: const Text("Create Notes"),
       ),
       body: ValueListenableBuilder<Box<NotesModel>>(
         //function is need
@@ -27,7 +28,17 @@ class _HomeScreenState extends State<HomeScreen> {
           // casting box data in list
           var data = box.values.toList().cast<NotesModel>();
 
-          return ListView.builder(
+          if (box.isEmpty) {
+            return const Center(
+              child: Text(
+                "No Notes  is aviabile at the moments",
+                style: TextStyle(
+                  fontSize: 16.0,
+                ),
+              ),
+            );
+          } else {
+            return ListView.builder(
               reverse: true,
               shrinkWrap: true,
               itemCount: box.length,
@@ -40,12 +51,45 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          data[index].title.toString(),
-                          style: const TextStyle(
-                            color: Colors.red,
-                            fontSize: 20.0,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              data[index].title.toString(),
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 20.0,
+                              ),
+                            ),
+                            const Spacer(),
+                            InkWell(
+                              onTap: () {
+                                _updatesNotesDialog(
+                                    data[index],
+                                    data[index].title.toString(),
+                                    data[index].Desc.toString());
+                              },
+                              child: const Icon(
+                                Icons.edit,
+                                color: Colors.green,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 12.0,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                // calling delete function
+                                delete(data[index]);
+                              },
+                              child: const Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 10.0,
                         ),
                         Text(
                           data[index].Desc.toString(),
@@ -57,7 +101,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 );
-              });
+              },
+            );
+          }
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -69,6 +115,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+// deleting data
+  void delete(NotesModel notesModel) async {
+    await notesModel.delete();
+  }
+
+// reading data
   Future<void> _showNotesDialog() async {
     return showDialog(
       context: context,
@@ -107,17 +159,77 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             TextButton(
               onPressed: () {
-                final data = NotesModel(
-                    title: titleController.text, Desc: descController.text);
-                // calling boxes class and creating box as an referenital variable
-                final box = Boxes.getData();
-                box.add(data);
-                data.save();
+                if (titleController.text != '' || descController.text != "") {
+                  final data = NotesModel(
+                      title: titleController.text, Desc: descController.text);
+                  // calling boxes class and creating box as an referenital variable
+                  final box = Boxes.getData();
+                  box.add(data);
+                  data.save();
 
-                titleController.clear();
-                descController.clear();
+                  titleController.clear();
+                  descController.clear();
+
+                  Navigator.pop(context);
+                }
               },
               child: const Text("Add new notes"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// updating data
+  Future<void> _updatesNotesDialog(
+      NotesModel notesModel, String title, String disc) async {
+    titleController.text = title;
+    descController.text = disc;
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Edits Notes"),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                    hintText: "Enter title",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10.0,
+                ),
+                TextField(
+                  controller: descController,
+                  decoration: const InputDecoration(
+                    hintText: "Enter Discription ",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                notesModel.title = titleController.text.toString();
+                notesModel.Desc = descController.text.toString();
+                await notesModel.save();
+
+                Navigator.pop(context);
+              },
+              child: const Text("Update notes"),
             ),
           ],
         );
